@@ -1,0 +1,39 @@
+{% extends 'base.html' %}
+{% block title %}Login - Project Management Tool{% endblock %}
+
+{% block content %}
+<div class="auth-page">
+    <div class="auth-card">
+        <div class="text-center mb-4">
+            <h2 class="fw-bold mb-1">Welcome Back</h2>
+            <p class="text-muted small">Sign in to manage your tasks and projects</p>
+        </div>
+        <form method="POST" action="{% url 'login' %}" novalidate>
+            {% csrf_token %}
+            
+            <div class="mb-3">
+                <label for="id_username" class="form-label small fw-semibold text-secondary">Username</label>
+                <div class="input-group">
+                    <span class="input-group-text bg-light border-end-0"><i class="bi bi-person text-muted"></i></span>
+                    <input type="text" name="username" id="id_username" class="form-control bg-light border-start-0" required placeholder="Enter username">
+                </div>
+            </div>
+            
+            <div class="mb-4">
+                <div class="d-flex justify-content-between align-items-center mb-1">
+                    <label for="id_password" class="form-label small fw-semibold text-secondary mb-0">Password</label>
+                </div>
+                <div class="input-group">
+                    <span class="input-group-text bg-light border-end-0"><i class="bi bi-lock text-muted"></i></span>
+                    <input type="password" name="password" id="id_password" class="form-control bg-light border-start-0" required placeholder="Enter password">
+                </div>
+            </div>
+            
+            <button type="submit" class="btn btn-primary w-100 py-2.5 mb-3" style="border-radius: 8px; font-weight: 600;">Sign In</button>
+        </form>
+        <div class="text-center">
+            <span class="small text-secondary">Don't have an account? <a href="{% url 'register' %}" class="text-decoration-none fw-semibold">Register here</a></span>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,235 @@
+{% extends 'base.html' %}
+{% block title %}{{ project.name }} - Details{% endblock %}
+
+{% block content %}
+<div class="container-fluid px-0">
+    <!-- Breadcrumbs / Top Actions -->
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center gap-3 mb-4">
+        <div>
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb mb-1">
+                    <li class="breadcrumb-item"><a href="{% url 'projects' %}" class="text-decoration-none">Projects</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">{{ project.name }}</li>
+                </ol>
+            </nav>
+            <h2 class="fw-bold text-dark mb-0">{{ project.name }}</h2>
+        </div>
+        <div class="d-flex flex-wrap gap-2">
+            <a href="{% url 'project_board' project.id %}" class="btn btn-primary d-flex align-items-center gap-2" style="border-radius: 8px;">
+                <i class="bi bi-kanban"></i> Open Board
+            </a>
+            <a href="{% url 'export_tasks' project.id %}" class="btn btn-success d-flex align-items-center gap-2" style="border-radius: 8px;">
+                <i class="bi bi-file-earmark-excel"></i> Export CSV
+            </a>
+            {% if project.created_by == user or user.role == 'ADMIN' %}
+            <a href="{% url 'invite_members' project.id %}" class="btn btn-outline-primary d-flex align-items-center gap-2" style="border-radius: 8px;">
+                <i class="bi bi-person-plus"></i> Manage Members
+            </a>
+            <a href="{% url 'edit_project' project.id %}" class="btn btn-light border d-flex align-items-center gap-2" style="border-radius: 8px;">
+                <i class="bi bi-pencil"></i> Edit
+            </a>
+            <a href="{% url 'delete_project' project.id %}" class="btn btn-outline-danger d-flex align-items-center gap-2" style="border-radius: 8px;">
+                <i class="bi bi-trash"></i> Delete
+            </a>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Layout details -->
+    <div class="row g-4 mb-4">
+        <!-- Left: Project metadata and statistics -->
+        <div class="col-lg-8">
+            <div class="card shadow-sm border-0 mb-4" style="border-radius: 12px;">
+                <div class="card-body p-4">
+                    <h5 class="fw-bold mb-3">Project Description</h5>
+                    <p class="text-secondary" style="white-space: pre-wrap;">{{ project.description|default:"No description has been added to this project yet." }}</p>
+                    
+                    <div class="row g-3 mt-3 pt-3 border-top">
+                        <div class="col-6 col-md-3">
+                            <span class="text-secondary small fw-semibold text-uppercase d-block">Status</span>
+                            <span class="badge text-bg-{% if project.status == 'PLANNING' %}secondary{% elif project.status == 'ACTIVE' %}primary{% else %}success{% endif %} text-uppercase mt-1">
+                                {{ project.get_status_display }}
+                            </span>
+                        </div>
+                        <div class="col-6 col-md-3">
+                            <span class="text-secondary small fw-semibold text-uppercase d-block">Created By</span>
+                            <span class="fw-semibold text-dark mt-1 d-block">{{ project.created_by.username }}</span>
+                        </div>
+                        <div class="col-6 col-md-3">
+                            <span class="text-secondary small fw-semibold text-uppercase d-block">Start Date</span>
+                            <span class="text-dark mt-1 d-block"><i class="bi bi-calendar-event me-1"></i> {{ project.start_date|date:"M d, Y" }}</span>
+                        </div>
+                        <div class="col-6 col-md-3">
+                            <span class="text-secondary small fw-semibold text-uppercase d-block">End Date</span>
+                            <span class="text-dark mt-1 d-block"><i class="bi bi-calendar-check me-1"></i> {{ project.end_date|date:"M d, Y" }}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Task statistics cards -->
+            <div class="row g-3 mb-4">
+                <div class="col-6 col-md-3">
+                    <div class="card text-center border-0 shadow-sm py-3" style="border-radius: 10px; background-color: #f8fafc;">
+                        <h4 class="fw-bold text-secondary mb-1">{{ todo_count }}</h4>
+                        <span class="small text-muted text-uppercase fw-semibold" style="font-size: 0.65rem;">To Do</span>
+                    </div>
+                </div>
+                <div class="col-6 col-md-3">
+                    <div class="card text-center border-0 shadow-sm py-3" style="border-radius: 10px; background-color: rgba(79, 70, 229, 0.05);">
+                        <h4 class="fw-bold text-primary mb-1">{{ progress_count }}</h4>
+                        <span class="small text-primary text-uppercase fw-semibold" style="font-size: 0.65rem;">In Progress</span>
+                    </div>
+                </div>
+                <div class="col-6 col-md-3">
+                    <div class="card text-center border-0 shadow-sm py-3" style="border-radius: 10px; background-color: rgba(245, 158, 11, 0.05);">
+                        <h4 class="fw-bold text-warning mb-1">{{ review_count }}</h4>
+                        <span class="small text-warning text-uppercase fw-semibold" style="font-size: 0.65rem;">Review</span>
+                    </div>
+                </div>
+                <div class="col-6 col-md-3">
+                    <div class="card text-center border-0 shadow-sm py-3" style="border-radius: 10px; background-color: rgba(16, 185, 129, 0.05);">
+                        <h4 class="fw-bold text-success mb-1">{{ done_count }}</h4>
+                        <span class="small text-success text-uppercase fw-semibold" style="font-size: 0.65rem;">Completed</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Members list -->
+            <div class="card shadow-sm border-0" style="border-radius: 12px;">
+                <div class="card-body p-4">
+                    <h5 class="fw-bold mb-3"><i class="bi bi-people-fill me-2 text-primary"></i>Project Members ({{ project.members.all.count }})</h5>
+                    <div class="table-responsive">
+                        <table class="table align-middle table-hover mb-0">
+                            <thead>
+                                <tr class="text-secondary small" style="font-size: 0.8rem;">
+                                    <th>MEMBER</th>
+                                    <th>ROLE</th>
+                                    <th>EMAIL</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for member in project.members.all %}
+                                <tr>
+                                    <td>
+                                        <div class="d-flex align-items-center gap-2">
+                                            {% if member.profile_picture %}
+                                            <img src="{{ member.profile_picture.url }}" class="rounded-circle border" style="width: 32px; height: 32px; object-fit: cover;">
+                                            {% else %}
+                                            <div class="user-avatar-initials" style="width: 32px; height: 32px; font-size: 0.8rem;">
+                                                {{ member.username|slice:":2"|upper }}
+                                            </div>
+                                            {% endif %}
+                                            <span class="fw-semibold text-dark">{{ member.full_name|default:member.username }}</span>
+                                        </div>
+                                    </td>
+                                    <td class="text-uppercase small fw-semibold text-muted">{{ member.get_role_display }}</td>
+                                    <td class="text-muted small">{{ member.email }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right Side: Priority chart & project activity timeline -->
+        <div class="col-lg-4">
+            <!-- Project completion card -->
+            <div class="card shadow-sm border-0 mb-4 text-center p-4" style="border-radius: 12px;">
+                <h6 class="text-secondary fw-semibold text-uppercase small mb-3">Overall Progress</h6>
+                <div class="mx-auto mb-3 position-relative d-flex align-items-center justify-content-center" style="width: 120px; height: 120px;">
+                    <!-- Circular completion graph -->
+                    <svg viewBox="0 0 36 36" class="w-100 h-100">
+                        <path class="text-light" stroke-width="3" stroke="currentColor" fill="none" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+                        <path class="text-primary" stroke-dasharray="{{ progress_percentage }}, 100" stroke-width="3" stroke-linecap="round" stroke="currentColor" fill="none" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+                    </svg>
+                    <div class="position-absolute text-center">
+                        <h4 class="fw-bold mb-0 text-dark">{{ progress_percentage }}%</h4>
+                        <span class="text-muted small" style="font-size: 0.65rem;">Done</span>
+                    </div>
+                </div>
+                <p class="small text-secondary mb-0">Based on {{ project.tasks.all.count }} tasks total</p>
+            </div>
+
+            <!-- Priority chart -->
+            <div class="card shadow-sm border-0 mb-4" style="border-radius: 12px;">
+                <div class="card-body p-4">
+                    <h5 class="fw-bold mb-3"><i class="bi bi-flag-fill me-2 text-danger"></i>Priority Distribution</h5>
+                    <div style="height: 160px; position: relative;">
+                        <canvas id="priorityChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Timeline -->
+            <div class="card shadow-sm border-0" style="border-radius: 12px;">
+                <div class="card-body p-4">
+                    <h5 class="fw-bold mb-3"><i class="bi bi-clock-history me-2 text-secondary"></i>Recent Project Logs</h5>
+                    {% if recent_logs %}
+                    <div class="timeline mt-3">
+                        {% for log in recent_logs %}
+                        <div class="timeline-item">
+                            <span class="timeline-marker"></span>
+                            <div class="timeline-content">
+                                <p class="mb-0 small fw-semibold text-dark">{{ log.user.username }}</p>
+                                <p class="mb-1 small text-secondary">{{ log.action }}</p>
+                                <span class="text-muted" style="font-size: 0.65rem;">{{ log.datetime|date:"M d, g:i a" }}</span>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% else %}
+                    <div class="text-center py-4 text-muted">
+                        <i class="bi bi-clock fs-2 mb-2 d-block"></i>
+                        <span class="small">No logs recorded for this project yet.</span>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        const pCtx = document.getElementById('priorityChart').getContext('2d');
+        new Chart(pCtx, {
+            type: 'bar',
+            data: {
+                labels: ['Low', 'Medium', 'High'],
+                datasets: [{
+                    label: 'Tasks Count',
+                    data: [{{ low_priority }}, {{ med_priority }}, {{ high_priority }}],
+                    backgroundColor: [
+                        '#10b981', // green
+                        '#f59e0b', // amber
+                        '#ef4444'  // red
+                    ],
+                    borderRadius: 6
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: false
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            precision: 0
+                        }
+                    }
+                }
+            }
+        });
+    });
+</script>
+{% endblock %}

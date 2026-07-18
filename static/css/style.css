@@ -1,0 +1,579 @@
+/* Custom styling for Project Management Tool */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap');
+
+:root {
+  --font-heading: 'Outfit', sans-serif;
+  --font-body: 'Inter', sans-serif;
+
+  /* Theme variables - Light Mode default */
+  --bg-app: #f4f6f9;
+  --bg-card: #ffffff;
+  --bg-sidebar: #0f172a; /* Slate 900 */
+  --bg-sidebar-hover: #1e293b; /* Slate 800 */
+  --text-main: #1e293b; /* Slate 800 */
+  --text-muted: #64748b; /* Slate 500 */
+  --text-sidebar: #f8fafc; /* Slate 50 */
+  --text-sidebar-muted: #94a3b8; /* Slate 400 */
+  --border-color: #e2e8f0; /* Slate 200 */
+  --primary-color: #4f46e5; /* Indigo 600 */
+  --primary-hover: #4338ca; /* Indigo 700 */
+  --accent-color: #0ea5e9; /* Sky 500 */
+  --kanban-bg: #e2e8f0;
+  
+  --priority-low: #10b981;
+  --priority-medium: #f59e0b;
+  --priority-high: #ef4444;
+
+  --transition-speed: 0.3s;
+}
+
+body.dark-mode {
+  --bg-app: #0b0f19; /* Custom very dark blue */
+  --bg-card: #151f32; /* Darker slate */
+  --bg-sidebar: #070a13;
+  --bg-sidebar-hover: #151f32;
+  --text-main: #f1f5f9;
+  --text-muted: #94a3b8;
+  --text-sidebar: #f1f5f9;
+  --text-sidebar-muted: #64748b;
+  --border-color: #243249;
+  --primary-color: #6366f1; /* Indigo 500 */
+  --primary-hover: #4f46e5;
+  --kanban-bg: #1e293b;
+}
+
+body {
+  font-family: var(--font-body);
+  background-color: var(--bg-app);
+  color: var(--text-main);
+  transition: background-color var(--transition-speed), color var(--transition-speed);
+  overflow-x: hidden;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-heading);
+  font-weight: 600;
+}
+
+/* Base Layout Structure */
+.app-wrapper {
+  display: flex;
+  min-height: 100vh;
+  width: 100vw;
+}
+
+/* Sidebar styling */
+.app-sidebar {
+  width: 260px;
+  background-color: var(--bg-sidebar);
+  color: var(--text-sidebar);
+  display: flex;
+  flex-direction: column;
+  transition: width var(--transition-speed);
+  z-index: 1000;
+  flex-shrink: 0;
+  border-right: 1px solid var(--border-color);
+}
+
+.sidebar-header {
+  padding: 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.sidebar-logo {
+  font-family: var(--font-heading);
+  font-size: 1.25rem;
+  font-weight: 800;
+  letter-spacing: -0.025em;
+  color: #fff;
+  text-decoration: none;
+}
+
+.sidebar-logo span {
+  color: var(--accent-color);
+}
+
+.sidebar-menu {
+  list-style: none;
+  padding: 1.5rem 0.75rem;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  flex-grow: 1;
+}
+
+.menu-item-link {
+  display: flex;
+  align-items: center;
+  gap: 0.875rem;
+  padding: 0.75rem 1rem;
+  color: var(--text-sidebar-muted);
+  text-decoration: none;
+  border-radius: 0.5rem;
+  font-size: 0.925rem;
+  font-weight: 500;
+  transition: all 0.2s;
+}
+
+.menu-item-link:hover {
+  background-color: var(--bg-sidebar-hover);
+  color: var(--text-sidebar);
+}
+
+.menu-item-link.active {
+  background-color: var(--primary-color);
+  color: #fff;
+}
+
+.menu-item-link i {
+  font-size: 1.1rem;
+}
+
+.sidebar-footer {
+  padding: 1rem 1.5rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  font-size: 0.8rem;
+  color: var(--text-sidebar-muted);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+/* Main Content Area */
+.app-content {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.app-navbar {
+  height: 70px;
+  background-color: var(--bg-card);
+  border-bottom: 1px solid var(--border-color);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 2rem;
+  z-index: 999;
+}
+
+.navbar-search {
+  max-width: 320px;
+  width: 100%;
+}
+
+.navbar-actions {
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+}
+
+.navbar-icon-btn {
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  font-size: 1.25rem;
+  cursor: pointer;
+  position: relative;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+}
+
+.navbar-icon-btn:hover {
+  background-color: var(--bg-app);
+  color: var(--text-main);
+}
+
+.navbar-icon-btn .badge-pill {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  padding: 0.25em 0.4em;
+  font-size: 0.65rem;
+}
+
+.user-avatar-initials {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 0.95rem;
+}
+
+.page-container {
+  padding: 2rem;
+  flex-grow: 1;
+  overflow-y: auto;
+}
+
+/* Dashboard Premium Cards */
+.stat-card {
+  background-color: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 1rem;
+  padding: 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  transition: transform var(--transition-speed), box-shadow var(--transition-speed);
+}
+
+.stat-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 10px 20px rgba(0,0,0,0.05);
+}
+
+.stat-icon {
+  width: 54px;
+  height: 54px;
+  border-radius: 0.75rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+}
+
+.bg-soft-primary {
+  background-color: rgba(79, 70, 229, 0.1);
+  color: var(--primary-color);
+}
+
+.bg-soft-success {
+  background-color: rgba(16, 185, 129, 0.1);
+  color: #10b981;
+}
+
+.bg-soft-warning {
+  background-color: rgba(245, 158, 11, 0.1);
+  color: #f59e0b;
+}
+
+.bg-soft-info {
+  background-color: rgba(14, 165, 233, 0.1);
+  color: var(--accent-color);
+}
+
+/* Kanban Board Column layout */
+.board-columns-container {
+  display: flex;
+  gap: 1.25rem;
+  overflow-x: auto;
+  align-items: flex-start;
+  min-height: calc(100vh - 240px);
+  padding-bottom: 1.5rem;
+}
+
+.board-column {
+  flex: 1;
+  min-width: 280px;
+  max-width: 320px;
+  background-color: var(--kanban-bg);
+  border-radius: 0.875rem;
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  max-height: calc(100vh - 210px);
+  transition: background-color 0.2s;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+}
+
+.board-column.drag-over {
+  background-color: rgba(79, 70, 229, 0.15);
+  border: 2px dashed var(--primary-color);
+}
+
+.column-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+  padding: 0.25rem;
+}
+
+.column-title {
+  font-size: 0.95rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.column-badge {
+  background-color: rgba(0, 0, 0, 0.1);
+  color: var(--text-main);
+  font-size: 0.75rem;
+  padding: 0.2em 0.6em;
+  border-radius: 20px;
+}
+
+.board-cards-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  overflow-y: auto;
+  flex-grow: 1;
+  min-height: 100px;
+  padding: 2px;
+}
+
+/* Task Cards styling */
+.task-card {
+  background-color: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 0.75rem;
+  padding: 1rem;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
+  cursor: grab;
+  transition: transform 0.2s, box-shadow 0.2s, border-left-color 0.2s;
+}
+
+.task-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.06);
+}
+
+.task-card.dragging {
+  opacity: 0.5;
+  cursor: grabbing;
+}
+
+.task-card-priority-bar {
+  height: 4px;
+  width: 40px;
+  border-radius: 2px;
+  margin-bottom: 0.75rem;
+}
+
+.priority-bar-low { background-color: var(--priority-low); }
+.priority-bar-medium { background-color: var(--priority-medium); }
+.priority-bar-high { background-color: var(--priority-high); }
+
+.priority-badge {
+  font-size: 0.7rem;
+  font-weight: 600;
+  padding: 0.2em 0.5em;
+  border-radius: 4px;
+  text-transform: uppercase;
+}
+
+.priority-low { background-color: rgba(16, 185, 129, 0.15); color: #10b981; }
+.priority-medium { background-color: rgba(245, 158, 11, 0.15); color: #d97706; }
+.priority-high { background-color: rgba(239, 68, 68, 0.15); color: #ef4444; }
+
+.task-card-title {
+  font-size: 0.925rem;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+  line-height: 1.4;
+  color: var(--text-main);
+  text-decoration: none;
+  display: block;
+}
+
+.task-card-title:hover {
+  color: var(--primary-color);
+}
+
+.task-card-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 0.875rem;
+  font-size: 0.775rem;
+  color: var(--text-muted);
+}
+
+.task-card-members {
+  display: flex;
+  margin-left: auto;
+}
+
+.avatar-overlap {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  border: 2px solid var(--bg-card);
+  margin-left: -6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.65rem;
+  font-weight: 700;
+  background-color: var(--accent-color);
+  color: white;
+}
+
+/* General Layout helpers & Custom Scrollbars */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--border-color);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--text-muted);
+}
+
+/* Timelines (Activity Logs) */
+.timeline {
+  position: relative;
+  padding-left: 2rem;
+  margin-left: 0.5rem;
+  border-left: 2px solid var(--border-color);
+}
+
+.timeline-item {
+  position: relative;
+  margin-bottom: 1.5rem;
+}
+
+.timeline-marker {
+  position: absolute;
+  left: -2.45rem;
+  top: 4px;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  border: 3px solid var(--bg-card);
+  background-color: var(--primary-color);
+}
+
+/* Authentication Layout */
+.auth-page {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, rgba(79, 70, 229, 0.1), rgba(14, 165, 233, 0.1));
+}
+
+.auth-card {
+  width: 100%;
+  max-width: 460px;
+  background-color: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 1.25rem;
+  padding: 2.5rem;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.05), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+}
+
+/* Overlapping member circles */
+.member-circle-list {
+  display: flex;
+}
+
+.member-circle {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background-color: var(--primary-color);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.75rem;
+  font-weight: 700;
+  border: 2px solid var(--bg-card);
+  margin-right: -8px;
+}
+
+/* Notifications Box */
+.notification-item {
+  padding: 1rem;
+  border-bottom: 1px solid var(--border-color);
+  display: flex;
+  gap: 1rem;
+  align-items: flex-start;
+  transition: background-color 0.2s;
+}
+
+.notification-item.unread {
+  background-color: rgba(79, 70, 229, 0.04);
+}
+
+.notification-item.unread:hover {
+  background-color: rgba(79, 70, 229, 0.08);
+}
+
+.notification-item:hover {
+  background-color: rgba(0,0,0,0.02);
+}
+
+.notification-item-unread-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: var(--primary-color);
+  margin-top: 6px;
+  flex-shrink: 0;
+}
+
+/* Custom form elements styling to fit card design */
+.card {
+  background-color: var(--bg-card) !important;
+  border: 1px solid var(--border-color) !important;
+  color: var(--text-main) !important;
+}
+
+.form-control, .form-select {
+  background-color: var(--bg-app) !important;
+  border: 1px solid var(--border-color) !important;
+  color: var(--text-main) !important;
+}
+
+.form-control:focus, .form-select:focus {
+  border-color: var(--primary-color) !important;
+  box-shadow: 0 0 0 0.25rem rgba(79, 70, 229, 0.25) !important;
+}
+
+/* Toast styling */
+.toast-container-custom {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  z-index: 1060;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+/* Responsive Overrides */
+@media (max-width: 768px) {
+  .app-sidebar {
+    width: 0;
+    position: fixed;
+    height: 100vh;
+  }
+  .app-sidebar.show-mobile {
+    width: 260px;
+  }
+  .navbar-search {
+    display: none;
+  }
+}

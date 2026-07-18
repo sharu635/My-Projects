@@ -1,0 +1,37 @@
+{% extends 'base.html' %}
+{% block title %}Register - Project Management Tool{% endblock %}
+
+{% block content %}
+<div class="auth-page">
+    <div class="auth-card" style="max-width: 520px;">
+        <div class="text-center mb-4">
+            <h2 class="fw-bold mb-1">Create Account</h2>
+            <p class="text-muted small">Get started with ProjectHub</p>
+        </div>
+        <form method="POST" enctype="multipart/form-data" action="{% url 'register' %}" novalidate>
+            {% csrf_token %}
+            
+            {% for field in form %}
+            <div class="mb-3">
+                <label for="{{ field.id_for_label }}" class="form-label small fw-semibold text-secondary">
+                    {{ field.label }}
+                    {% if field.field.required %}<span class="text-danger">*</span>{% endif %}
+                </label>
+                {{ field }}
+                {% if field.help_text %}
+                <div class="form-text" style="font-size: 0.75rem;">{{ field.help_text }}</div>
+                {% endif %}
+                {% if field.errors %}
+                <div class="invalid-feedback d-block">{{ field.errors.as_text }}</div>
+                {% endif %}
+            </div>
+            {% endfor %}
+            
+            <button type="submit" class="btn btn-primary w-100 py-2.5 mb-3 mt-2" style="border-radius: 8px; font-weight: 600;">Sign Up</button>
+        </form>
+        <div class="text-center">
+            <span class="small text-secondary">Already have an account? <a href="{% url 'login' %}" class="text-decoration-none fw-semibold">Sign in here</a></span>
+        </div>
+    </div>
+</div>
+{% endblock %}

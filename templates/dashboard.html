@@ -1,0 +1,248 @@
+{% extends 'base.html' %}
+{% block title %}Dashboard - Project Management Tool{% endblock %}
+
+{% block content %}
+<div class="container-fluid px-0">
+    <!-- Top Greeting -->
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center gap-3 mb-4">
+        <div>
+            <h2 class="fw-bold text-dark mb-1">Hello, {{ user.full_name|default:user.username }}!</h2>
+            <p class="text-secondary mb-0">Here is what's happening on your projects today.</p>
+        </div>
+        <div class="d-flex gap-2">
+            <a href="{% url 'create_project' %}" class="btn btn-primary d-flex align-items-center gap-2" style="border-radius: 8px; font-weight: 500;">
+                <i class="bi bi-plus-lg"></i> New Project
+            </a>
+        </div>
+    </div>
+
+    <!-- Stats row -->
+    <div class="row g-4 mb-4">
+        <div class="col-md-6 col-lg-3">
+            <div class="stat-card">
+                <div>
+                    <span class="text-secondary small fw-semibold text-uppercase">Projects</span>
+                    <h3 class="fw-bold mt-1 mb-0">{{ total_projects }}</h3>
+                    <div class="mt-2" style="font-size: 0.75rem;">
+                        <span class="text-success"><i class="bi bi-activity"></i> {{ active_projects }} Active</span>
+                    </div>
+                </div>
+                <div class="stat-icon bg-soft-primary">
+                    <i class="bi bi-folder-fill"></i>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6 col-lg-3">
+            <div class="stat-card">
+                <div>
+                    <span class="text-secondary small fw-semibold text-uppercase">Assigned Tasks</span>
+                    <h3 class="fw-bold mt-1 mb-0">{{ total_tasks }}</h3>
+                    <div class="mt-2" style="font-size: 0.75rem;">
+                        <span class="text-primary"><i class="bi bi-check-circle"></i> {{ completed_tasks }} Completed</span>
+                    </div>
+                </div>
+                <div class="stat-icon bg-soft-success">
+                    <i class="bi bi-card-checklist"></i>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6 col-lg-3">
+            <div class="stat-card">
+                <div>
+                    <span class="text-secondary small fw-semibold text-uppercase">Completion Rate</span>
+                    <h3 class="fw-bold mt-1 mb-0">{{ completion_rate }}%</h3>
+                    <div class="progress mt-2" style="height: 6px; border-radius: 10px;">
+                        <div class="progress-bar bg-info" role="progressbar" style="width: {{ completion_rate }}%;" aria-valuenow="{{ completion_rate }}" aria-valuemin="0" aria-valuemax="100"></div>
+                    </div>
+                </div>
+                <div class="stat-icon bg-soft-info">
+                    <i class="bi bi-graph-up-arrow"></i>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6 col-lg-3">
+            <div class="stat-card">
+                <div>
+                    <span class="text-secondary small fw-semibold text-uppercase">Active Deadlines</span>
+                    <h3 class="fw-bold mt-1 mb-0">{{ upcoming_tasks.count }}</h3>
+                    <div class="mt-2" style="font-size: 0.75rem;">
+                        <span class="text-danger"><i class="bi bi-calendar-event"></i> Next 7 days</span>
+                    </div>
+                </div>
+                <div class="stat-icon bg-soft-warning">
+                    <i class="bi bi-calendar-check"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main columns -->
+    <div class="row g-4">
+        <!-- Left: Tasks and Deadlines -->
+        <div class="col-lg-8">
+            <!-- Upcoming deadlines -->
+            <div class="card shadow-sm border-0 mb-4" style="border-radius: 12px;">
+                <div class="card-body p-4">
+                    <h5 class="fw-bold mb-3"><i class="bi bi-exclamation-circle text-danger me-2"></i>Upcoming Deadlines</h5>
+                    {% if upcoming_tasks %}
+                    <div class="table-responsive">
+                        <table class="table align-middle mb-0">
+                            <thead>
+                                <tr class="text-secondary small" style="font-size: 0.8rem;">
+                                    <th>TASK TITLE</th>
+                                    <th>PROJECT</th>
+                                    <th>PRIORITY</th>
+                                    <th>DUE DATE</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for task in upcoming_tasks %}
+                                <tr>
+                                    <td>
+                                        <a href="{% url 'task_detail' task.id %}" class="fw-semibold text-dark text-decoration-none">{{ task.title }}</a>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-light text-secondary border">{{ task.project.name }}</span>
+                                    </td>
+                                    <td>
+                                        <span class="priority-badge priority-{{ task.priority|lower }}">{{ task.get_priority_display }}</span>
+                                    </td>
+                                    <td class="text-danger fw-semibold small">
+                                        <i class="bi bi-clock me-1"></i> {{ task.due_date|date:"M d, Y" }}
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% else %}
+                    <div class="text-center py-4 text-muted">
+                        <i class="bi bi-calendar-check fs-2 mb-2 d-block"></i>
+                        <span class="small">No urgent upcoming deadlines!</span>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Tasks list -->
+            <div class="card shadow-sm border-0" style="border-radius: 12px;">
+                <div class="card-body p-4">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h5 class="fw-bold mb-0"><i class="bi bi-list-task text-primary me-2"></i>My Tasks</h5>
+                        <a href="{% url 'projects' %}" class="small text-decoration-none fw-semibold">View projects</a>
+                    </div>
+                    {% if assigned_tasks %}
+                    <div class="list-group list-group-flush">
+                        {% for task in assigned_tasks %}
+                        <div class="list-group-item px-0 py-3 d-flex justify-content-between align-items-center gap-3">
+                            <div>
+                                <a href="{% url 'task_detail' task.id %}" class="fw-semibold text-dark text-decoration-none d-block mb-1">{{ task.title }}</a>
+                                <div class="d-flex align-items-center gap-2">
+                                    <span class="badge bg-light text-secondary border" style="font-size: 0.7rem;">{{ task.project.name }}</span>
+                                    <span class="text-muted" style="font-size: 0.72rem;"><i class="bi bi-calendar2 me-1"></i>Due {{ task.due_date|default:"None" }}</span>
+                                </div>
+                            </div>
+                            <div class="d-flex align-items-center gap-3">
+                                <span class="priority-badge priority-{{ task.priority|lower }}">{{ task.get_priority_display }}</span>
+                                <span class="badge text-bg-{% if task.status == 'TODO' %}secondary{% elif task.status == 'IN_PROGRESS' %}primary{% elif task.status == 'REVIEW' %}warning{% else %}success{% endif %} text-uppercase" style="font-size: 0.65rem;">
+                                    {{ task.get_status_display }}
+                                </span>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% else %}
+                    <div class="text-center py-4 text-muted">
+                        <i class="bi bi-check-circle-fill fs-2 text-success mb-2 d-block"></i>
+                        <span class="small">Hurray! No tasks assigned to you.</span>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Right: Activity Logs and Charts -->
+        <div class="col-lg-4">
+            <!-- Visual Chart -->
+            <div class="card shadow-sm border-0 mb-4" style="border-radius: 12px;">
+                <div class="card-body p-4">
+                    <h5 class="fw-bold mb-3"><i class="bi bi-pie-chart text-info me-2"></i>Task Progress Status</h5>
+                    <canvas id="taskStatusChart" style="max-height: 180px;"></canvas>
+                </div>
+            </div>
+
+            <!-- Activity timeline -->
+            <div class="card shadow-sm border-0" style="border-radius: 12px;">
+                <div class="card-body p-4">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h5 class="fw-bold mb-0"><i class="bi bi-clock-history text-secondary me-2"></i>Recent Activity</h5>
+                        <a href="{% url 'activity_logs' %}" class="small text-decoration-none fw-semibold">View all</a>
+                    </div>
+                    {% if recent_activities %}
+                    <div class="timeline mt-3">
+                        {% for log in recent_activities %}
+                        <div class="timeline-item">
+                            <span class="timeline-marker"></span>
+                            <div class="timeline-content">
+                                <p class="mb-0 small fw-semibold text-dark">{{ log.user.username }}</p>
+                                <p class="mb-1 small text-secondary">{{ log.action }}</p>
+                                <span class="text-muted" style="font-size: 0.68rem;">{{ log.datetime|timesince }} ago</span>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% else %}
+                    <div class="text-center py-4 text-muted">
+                        <i class="bi bi-clock fs-2 mb-2 d-block"></i>
+                        <span class="small">No logs recorded yet.</span>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        const ctx = document.getElementById('taskStatusChart').getContext('2d');
+        new Chart(ctx, {
+            type: 'doughnut',
+            data: {
+                labels: ['To Do', 'In Progress', 'Review', 'Completed'],
+                datasets: [{
+                    data: [{{ todo_tasks }}, {{ in_progress_tasks }}, {{ review_tasks }}, {{ completed_tasks }}],
+                    backgroundColor: [
+                        '#64748b', // Slate
+                        '#4f46e5', // Indigo
+                        '#f59e0b', // Amber
+                        '#10b981'  // Emerald
+                    ],
+                    borderWidth: 0
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: {
+                            boxWidth: 12,
+                            font: {
+                                size: 10
+                            }
+                        }
+                    }
+                },
+                cutout: '70%'
+            }
+        });
+    });
+</script>
+{% endblock %}
