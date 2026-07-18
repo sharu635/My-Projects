@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+
+{% block title %}Checkout{% endblock %}
+
+{% block content %}
+<h1 class="mb-4">Checkout</h1>
+
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 2rem;">
+    <!-- Order Summary -->
+    <div class="card p-4">
+        <h2 class="mb-3">Order Summary</h2>
+        <div style="border-bottom: 1px solid #e5e7eb; padding-bottom: 1rem; margin-bottom: 1rem;">
+            {% for item in items %}
+            <div class="d-flex justify-content-between mb-2">
+                <span>{{ item.quantity }}x {{ item.product.name }}</span>
+                <span>${{ item.get_total_price }}</span>
+            </div>
+            {% endfor %}
+        </div>
+        <div class="d-flex justify-content-between" style="font-size: 1.25rem; font-weight: 700;">
+            <span>Total:</span>
+            <span style="color: var(--primary-color);">${{ subtotal }}</span>
+        </div>
+    </div>
+
+    <!-- Shipping Form -->
+    <div class="card p-4">
+        <h2 class="mb-3">Shipping Details</h2>
+        <form method="post" action="{% url 'checkout' %}">
+            {% csrf_token %}
+            <div class="form-group mb-4">
+                <label for="address" class="form-label">Complete Shipping Address</label>
+                <textarea name="address" id="address" class="form-control" rows="4" required placeholder="123 Main St, City, State, ZIP..."></textarea>
+            </div>
+            
+            <button type="submit" class="btn btn-primary w-100" style="font-size: 1.1rem; padding: 0.75rem;">Place Order</button>
+        </form>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,50 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="mb-4 d-flex justify-content-between align-items-center flex-wrap gap-2">
+    <div>
+        <h1 class="mb-1">Our Products</h1>
+        <div class="d-flex gap-2 flex-wrap mt-2">
+            <a href="{% url 'home' %}" class="badge" style="text-decoration: none; {% if not current_category %}background-color: var(--primary-dark);{% endif %}">All</a>
+            {% for cat in categories %}
+                <a href="{% url 'home' %}?category={{ cat.slug }}" class="badge" style="text-decoration: none; {% if current_category == cat.slug %}background-color: var(--primary-dark);{% endif %}">{{ cat.name }}</a>
+            {% endfor %}
+        </div>
+    </div>
+    
+    <form method="get" action="{% url 'home' %}" class="d-flex gap-2">
+        <input type="text" name="search" class="form-control" placeholder="Search products..." value="{{ search_query|default:'' }}">
+        <button type="submit" class="btn btn-primary">Search</button>
+    </form>
+</div>
+
+{% if products %}
+<div class="product-grid">
+    {% for product in products %}
+    <div class="card">
+        {% if product.image %}
+            <img src="{{ product.image.url }}" alt="{{ product.name }}" class="card-img">
+        {% else %}
+            <div class="card-img" style="background-color: #e5e7eb; display: flex; align-items: center; justify-content: center; color: #9ca3af;">No Image</div>
+        {% endif %}
+        
+        <div class="card-body">
+            <a href="{% url 'product_detail' product.id %}" class="card-title">{{ product.name }}</a>
+            <p class="badge mb-2">{{ product.category.name }}</p>
+            <p class="card-text">{{ product.description|truncatewords:15 }}</p>
+            <div class="d-flex justify-content-between align-items-center mt-auto">
+                <span class="card-price">${{ product.price }}</span>
+                <a href="{% url 'product_detail' product.id %}" class="btn btn-primary">View</a>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% else %}
+<div class="alert alert-info text-center mt-4">
+    No products found matching your criteria.
+</div>
+{% endif %}
+
+{% endblock %}
