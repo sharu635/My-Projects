@@ -299,7 +299,7 @@ function saveTaskStatusChange(taskId, newStatus) {
             console.error("Failed to update status on server:", data.message);
         }
     })
-    .catch(err => console.error("Error updates task status:", err));
+    .catch(err => console.error("Error updating task status:", err));
 }
 
 function updateBoardColumnCounts() {
@@ -348,6 +348,8 @@ function setupBoardWebSocket(projectId) {
 
     function getCurrentUserName() {
         const profileDropdown = document.getElementById('userProfileDropdown');
-        return profileDropdown ? profileDropdown.innerText.trim() : "";
+        if (!profileDropdown) return "";
+        const usernameSpan = profileDropdown.querySelector('span');
+        return usernameSpan ? usernameSpan.innerText.trim() : "";
     }
 }

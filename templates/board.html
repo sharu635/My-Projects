@@ -121,7 +121,7 @@
         <div class="modal-content shadow border-0" style="border-radius: 16px;">
             <div class="modal-header border-bottom p-3">
                 <h5 class="modal-title fw-bold" id="createTaskModalLabel"><i class="bi bi-file-earmark-plus me-2 text-primary"></i>Create New Task</h5>
-                <button type="button" class="btn-close" data-bs-discard="modal" data-bs-dismiss="modal" aria-label="Close"></button>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <form method="POST" enctype="multipart/form-data" action="{% url 'create_task' project.id %}" novalidate>
                 <div class="modal-body p-4">
