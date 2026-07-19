@@ -15,7 +15,7 @@
     <!-- Bootstrap Icons -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
     <!-- Custom CSS -->
-    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <link rel="stylesheet" href="{% static 'css/style.css' %}?v=2.1">
     {% block extra_css %}{% endblock %}
 </head>
 <body>
@@ -59,9 +59,9 @@
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" role="button" data-bs-toggle="dropdown">
                             {% if user.profile.profile_picture %}
-                            <img src="{{ user.profile.profile_picture.url }}" alt="{{ user.username }}" class="nav-avatar">
+                            <img src="{{ user.profile.profile_picture.url }}" alt="{{ user.username }}" class="nav-avatar rounded-circle border border-2 border-primary" style="width: 32px; height: 32px; object-fit: cover;">
                             {% else %}
-                            <div class="nav-avatar-placeholder">
+                            <div class="nav-avatar-placeholder rounded-circle d-flex align-items-center justify-content-center text-white fw-bold bg-primary" style="width: 32px; height: 32px;">
                                 <i class="bi bi-person-fill"></i>
                             </div>
                             {% endif %}
