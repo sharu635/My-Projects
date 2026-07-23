@@ -1,0 +1,122 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Login - ProjectHub{% endblock %}
+
+{% block content %}
+<div class="auth-page">
+    <!-- Animated Background Shapes -->
+    <div class="auth-bg-shapes">
+        <div class="shape shape-1"></div>
+        <div class="shape shape-2"></div>
+        <div class="shape shape-3"></div>
+        <div class="shape shape-4"></div>
+        <div class="shape shape-5"></div>
+    </div>
+
+    <div class="auth-container">
+        <!-- Left Panel - Branding -->
+        <div class="auth-branding-panel">
+            <div class="branding-content">
+                <div class="brand-logo-auth">
+                    <i class="bi bi-grid-1x2-fill"></i>
+                    <span>Project<span class="brand-accent">Hub</span></span>
+                </div>
+                <h1 class="branding-headline">Manage projects<br>like a <span class="gradient-text">pro</span>.</h1>
+                <p class="branding-subtext">
+                    Collaborate with your team, track progress with Kanban boards, 
+                    and deliver projects on time — all in one powerful platform.
+                </p>
+                <div class="branding-features">
+                    <div class="brand-feature-item">
+                        <div class="feature-check"><i class="bi bi-check-lg"></i></div>
+                        <span>Kanban boards with drag & drop</span>
+                    </div>
+                    <div class="brand-feature-item">
+                        <div class="feature-check"><i class="bi bi-check-lg"></i></div>
+                        <span>Real-time collaboration</span>
+                    </div>
+                    <div class="brand-feature-item">
+                        <div class="feature-check"><i class="bi bi-check-lg"></i></div>
+                        <span>Activity tracking & notifications</span>
+                    </div>
+                </div>
+            </div>
+            <div class="branding-footer-text">
+                &copy; 2026 ProjectHub. Built for modern teams.
+            </div>
+        </div>
+
+        <!-- Right Panel - Login Form -->
+        <div class="auth-form-panel">
+            <div class="auth-form-wrapper">
+                <div class="auth-form-header">
+                    <div class="auth-icon-circle">
+                        <i class="bi bi-shield-lock-fill"></i>
+                    </div>
+                    <h2 class="auth-title">Welcome Back</h2>
+                    <p class="auth-subtitle">Sign in to continue to your workspace</p>
+                </div>
+
+                <form method="POST" action="{% url 'login' %}" novalidate class="auth-form">
+                    {% csrf_token %}
+                    
+                    <div class="form-floating-group">
+                        <div class="input-icon-wrapper">
+                            <i class="bi bi-person input-icon"></i>
+                            <input type="text" name="username" id="id_username" class="auth-input" 
+                                required placeholder="Enter your username" autocomplete="username">
+                            <label for="id_username" class="auth-label">Username</label>
+                        </div>
+                    </div>
+
+                    <div class="form-floating-group">
+                        <div class="input-icon-wrapper">
+                            <i class="bi bi-lock input-icon"></i>
+                            <input type="password" name="password" id="id_password" class="auth-input" 
+                                required placeholder="Enter your password" autocomplete="current-password">
+                            <label for="id_password" class="auth-label">Password</label>
+                            <button type="button" class="password-toggle" onclick="togglePassword('id_password', this)">
+                                <i class="bi bi-eye"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="remember_me" name="remember">
+                            <label class="form-check-label small" for="remember_me">Remember me</label>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="auth-submit-btn">
+                        <span>Sign In</span>
+                        <i class="bi bi-arrow-right"></i>
+                    </button>
+                </form>
+
+                <div class="auth-divider">
+                    <span>or</span>
+                </div>
+
+                <div class="auth-alt-action">
+                    <p>Don't have an account? <a href="{% url 'register' %}" class="auth-link">Create one free</a></p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function togglePassword(inputId, btn) {
+    const input = document.getElementById(inputId);
+    const icon = btn.querySelector('i');
+    if (input.type === 'password') {
+        input.type = 'text';
+        icon.className = 'bi bi-eye-slash';
+    } else {
+        input.type = 'password';
+        icon.className = 'bi bi-eye';
+    }
+}
+</script>
+{% endblock %}

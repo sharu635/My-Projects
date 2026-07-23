@@ -1,0 +1,51 @@
+<div class="task-card" draggable="true" data-task-id="{{ task.id }}">
+    <!-- Top Priority Color Line -->
+    <div class="task-card-priority-bar priority-bar-{{ task.priority|lower }}"></div>
+    
+    <!-- Title -->
+    <a href="{% url 'task_detail' task.id %}" class="task-card-title">{{ task.title }}</a>
+    
+    <!-- Labels -->
+    {% if task.labels %}
+    <div class="mb-2">
+        {% for label in task.get_labels_list %}
+        <span class="badge bg-light text-secondary border me-1" style="font-size: 0.65rem;">{{ label }}</span>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <!-- Progress Indicator -->
+    {% if task.progress > 0 %}
+    <div class="mb-2">
+        <div class="progress" style="height: 4px; border-radius: 4px;" title="Task Progress: {{ task.progress }}%">
+            <div class="progress-bar bg-success" role="progressbar" style="width: {{ task.progress }}%;" aria-valuenow="{{ task.progress }}" aria-valuemin="0" aria-valuemax="100"></div>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Footer: Date, Priority Badge & Assignee Avatar -->
+    <div class="task-card-footer mt-3">
+        <div class="d-flex align-items-center gap-1 text-muted" {% if task.due_date %}title="Due Date: {{ task.due_date }}"{% endif %}>
+            <i class="bi bi-calendar2-week"></i>
+            <span>{{ task.due_date|date:"M d"|default:"--" }}</span>
+        </div>
+        
+        <div class="d-flex align-items-center gap-2">
+            <span class="priority-badge priority-{{ task.priority|lower }}">{{ task.get_priority_display|slice:":3" }}</span>
+            
+            {% if task.assigned_user %}
+                {% if task.assigned_user.profile_picture %}
+                <img src="{{ task.assigned_user.profile_picture.url }}" class="rounded-circle border" style="width: 24px; height: 24px; object-fit: cover;" title="Assigned to {{ task.assigned_user.username }}">
+                {% else %}
+                <div class="user-avatar-initials" style="width: 24px; height: 24px; font-size: 0.65rem;" title="Assigned to {{ task.assigned_user.username }}">
+                    {{ task.assigned_user.username|slice:":2"|upper }}
+                </div>
+                {% endif %}
+            {% else %}
+                <div class="rounded-circle border bg-light text-muted d-flex align-items-center justify-content-center" style="width: 24px; height: 24px; font-size: 0.65rem;" title="Unassigned">
+                    <i class="bi bi-person"></i>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>

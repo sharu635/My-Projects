@@ -1,0 +1,115 @@
+{% extends 'base.html' %}
+{% block title %}My Projects - Project Management Tool{% endblock %}
+
+{% block content %}
+<div class="container-fluid px-0">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="fw-bold text-dark mb-1">My Projects</h2>
+            <p class="text-secondary mb-0">Manage and track your active workspace projects</p>
+        </div>
+        <a href="{% url 'create_project' %}" class="btn btn-primary d-flex align-items-center gap-2" style="border-radius: 8px; font-weight: 500;">
+            <i class="bi bi-plus-lg"></i> Create Project
+        </a>
+    </div>
+
+    <!-- Search/Filter -->
+    <div class="card shadow-sm border-0 mb-4" style="border-radius: 12px;">
+        <div class="card-body p-3">
+            <form method="GET" action="{% url 'projects' %}" class="row g-2">
+                <div class="col-md-9">
+                    <div class="input-group">
+                        <span class="input-group-text bg-light border-0"><i class="bi bi-search text-muted"></i></span>
+                        <input type="text" name="search" class="form-control bg-light border-0" placeholder="Search by project name..." value="{{ search_query|default:'' }}">
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <button type="submit" class="btn btn-dark w-100" style="border-radius: 6px;">Filter Projects</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    {% if projects %}
+    <div class="row g-4">
+        {% for project in projects %}
+        <div class="col-md-6 col-lg-4">
+            <div class="card h-100 shadow-sm border-0" style="border-radius: 12px; transition: transform 0.2s;">
+                <div class="card-body p-4 d-flex flex-column">
+                    <div class="d-flex justify-content-between align-items-start mb-3">
+                        <span class="badge text-bg-{% if project.status == 'PLANNING' %}secondary{% elif project.status == 'ACTIVE' %}primary{% else %}success{% endif %} text-uppercase" style="font-size: 0.65rem;">
+                            {{ project.get_status_display }}
+                        </span>
+                        {% if project.created_by == user or user.role == 'ADMIN' %}
+                        <div class="dropdown">
+                            <button class="btn btn-link text-muted p-0" id="projMenu_{{ project.id }}" data-bs-toggle="dropdown" aria-expanded="false">
+                                <i class="bi bi-three-dots-vertical"></i>
+                            </button>
+                            <ul class="dropdown-menu dropdown-menu-end shadow border-0" aria-labelledby="projMenu_{{ project.id }}">
+                                <li><a class="dropdown-item" href="{% url 'edit_project' project.id %}"><i class="bi bi-pencil me-2"></i>Edit Details</a></li>
+                                <li><a class="dropdown-item" href="{% url 'invite_members' project.id %}"><i class="bi bi-person-plus me-2"></i>Manage Members</a></li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li><a class="dropdown-item text-danger" href="{% url 'delete_project' project.id %}"><i class="bi bi-trash me-2"></i>Delete Project</a></li>
+                            </ul>
+                        </div>
+                        {% endif %}
+                    </div>
+
+                    <h5 class="fw-bold mb-2">
+                        <a href="{% url 'project_detail' project.id %}" class="text-dark text-decoration-none">{{ project.name }}</a>
+                    </h5>
+                    
+                    <p class="text-secondary small mb-4 flex-grow-1" style="display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden;">
+                        {{ project.description|default:"No description provided." }}
+                    </p>
+
+                    <!-- Progress -->
+                    <div class="mb-4">
+                        <div class="d-flex justify-content-between align-items-center mb-1">
+                            <span class="small text-secondary fw-semibold">Task Progress</span>
+                            <span class="small fw-bold text-primary">{{ project.progress }}%</span>
+                        </div>
+                        <div class="progress" style="height: 6px; border-radius: 10px;">
+                            <div class="progress-bar bg-primary" role="progressbar" style="width: {{ project.progress }}%;" aria-valuenow="{{ project.progress }}" aria-valuemin="0" aria-valuemax="100"></div>
+                        </div>
+                    </div>
+
+                    <!-- Members list (overlapping initials) -->
+                    <div class="d-flex align-items-center justify-content-between mt-auto pt-3 border-top">
+                        <div class="member-circle-list">
+                            {% for member in project.members.all|slice:":4" %}
+                                <div class="member-circle" title="{{ member.username }}" style="background: linear-gradient(135deg, #4f46e5, #0ea5e9);">
+                                    {{ member.username|slice:":2"|upper }}
+                                </div>
+                            {% endfor %}
+                            {% if project.members.all.count > 4 %}
+                                <div class="member-circle bg-secondary text-white" title="{{ project.members.all.count }} members total">
+                                    +{{ project.members.all.count|add:"-4" }}
+                                </div>
+                            {% endif %}
+                        </div>
+                        <div class="text-muted small">
+                            <i class="bi bi-calendar-event me-1"></i> Due {{ project.end_date|date:"M d" }}
+                        </div>
+                    </div>
+                </div>
+                <div class="card-footer bg-light border-top p-0" style="border-bottom-left-radius: 12px; border-bottom-right-radius: 12px;">
+                    <div class="d-flex text-center">
+                        <a href="{% url 'project_board' project.id %}" class="flex-grow-1 py-3 text-primary text-decoration-none fw-semibold border-end hover-bg-light" style="font-size: 0.85rem;"><i class="bi bi-kanban me-2"></i>Board View</a>
+                        <a href="{% url 'project_detail' project.id %}" class="flex-grow-1 py-3 text-dark text-decoration-none fw-semibold hover-bg-light" style="font-size: 0.85rem;"><i class="bi bi-eye me-2"></i>Details</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="text-center py-5 bg-white border rounded-4 shadow-sm">
+        <i class="bi bi-briefcase fs-1 text-secondary mb-3 d-block"></i>
+        <h4>No projects found</h4>
+        <p class="text-secondary small">Get started by creating your first project now.</p>
+        <a href="{% url 'create_project' %}" class="btn btn-primary mt-2">Create New Project</a>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

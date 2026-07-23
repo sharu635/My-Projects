@@ -1,0 +1,45 @@
+{% extends 'base.html' %}
+{% block title %}Activity Logs - Project Management Tool{% endblock %}
+
+{% block content %}
+<div class="container-fluid px-0">
+    <div class="mb-4">
+        <h2 class="fw-bold text-dark mb-1">Activity Timeline</h2>
+        <p class="text-secondary mb-0">Trace recent history across your projects and workspace</p>
+    </div>
+
+    <div class="row">
+        <div class="col-lg-8">
+            <div class="card shadow-sm border-0" style="border-radius: 12px;">
+                <div class="card-body p-4">
+                    {% if logs %}
+                    <div class="timeline">
+                        {% for log in logs %}
+                        <div class="timeline-item">
+                            <span class="timeline-marker"></span>
+                            <div class="timeline-content">
+                                <div class="d-flex align-items-center gap-2 mb-1">
+                                    <div class="user-avatar-initials" style="width: 26px; height: 26px; font-size: 0.7rem; background: linear-gradient(135deg, #64748b, #475569);">
+                                        {{ log.user.username|slice:":2"|upper }}
+                                    </div>
+                                    <span class="fw-bold text-dark small">{{ log.user.username }}</span>
+                                    <span class="text-muted" style="font-size: 0.75rem;"><i class="bi bi-clock me-1"></i> {{ log.datetime|date:"M d, Y, g:i a" }}</span>
+                                </div>
+                                <p class="mb-0 text-secondary small">{{ log.action }}</p>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% else %}
+                    <div class="text-center py-5 text-muted">
+                        <i class="bi bi-clock-history fs-1 mb-3 d-block"></i>
+                        <h5>No recorded activity logs</h5>
+                        <p class="text-secondary small">Activity will be logged here as users log in, manage tasks, and post comments.</p>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

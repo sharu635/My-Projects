@@ -1,0 +1,62 @@
+{% extends 'base.html' %}
+{% block title %}{{ title }} - Project Management Tool{% endblock %}
+
+{% block content %}
+<div class="container-fluid px-0">
+    <!-- Navigation back -->
+    <div class="mb-4">
+        <a href="{% if project %}{% url 'project_detail' project.id %}{% else %}{% url 'projects' %}{% endif %}" class="text-decoration-none">
+            <i class="bi bi-arrow-left me-1"></i> Back
+        </a>
+        <h2 class="fw-bold text-dark mt-2">{{ title }}</h2>
+    </div>
+
+    <div class="row">
+        <div class="col-lg-8">
+            <div class="card shadow-sm border-0" style="border-radius: 12px;">
+                <div class="card-body p-4">
+                    <form method="POST" novalidate>
+                        {% csrf_token %}
+                        
+                        {% for field in form %}
+                        <div class="mb-4">
+                            <label for="{{ field.id_for_label }}" class="form-label small fw-semibold text-secondary">
+                                {{ field.label }}
+                                {% if field.field.required %}<span class="text-danger">*</span>{% endif %}
+                            </label>
+                            
+                            {% if field.name == 'members' %}
+                            <div class="border rounded p-3 bg-light" style="max-height: 200px; overflow-y: auto;">
+                                {% for checkbox in field %}
+                                <div class="form-check mb-2">
+                                    {{ checkbox.tag }}
+                                    <label class="form-check-label small text-dark" for="{{ checkbox.id_for_label }}">
+                                        {{ checkbox.choice_label }}
+                                    </label>
+                                </div>
+                                {% endfor %}
+                            </div>
+                            {% else %}
+                                {{ field }}
+                            {% endif %}
+                            
+                            {% if field.help_text %}
+                            <div class="form-text" style="font-size: 0.75rem;">{{ field.help_text }}</div>
+                            {% endif %}
+                            {% if field.errors %}
+                            <div class="invalid-feedback d-block">{{ field.errors.as_text }}</div>
+                            {% endif %}
+                        </div>
+                        {% endfor %}
+                        
+                        <div class="d-flex gap-2 justify-content-end mt-4">
+                            <a href="{% if project %}{% url 'project_detail' project.id %}{% else %}{% url 'projects' %}{% endif %}" class="btn btn-light border px-4" style="border-radius: 8px;">Cancel</a>
+                            <button type="submit" class="btn btn-primary px-4" style="border-radius: 8px; font-weight: 600;">Save Project</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
