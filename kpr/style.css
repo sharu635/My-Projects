@@ -1,0 +1,116 @@
+.parent p{
+    font-family: cursive;
+    letter-spacing: 10px;
+    text-transform: capitalize;
+    text-decoration: line-through;
+    text-shadow: 0cqmin;
+}
+p:hover{
+    color: fuchsia;
+    background-color: chocolate;
+}
+.border{
+    border:2px solid plum;
+    border-radius: 30px;
+    padding-left: 10px;
+    padding-top: 20px;
+}
+.margin{
+    border: 15px solid aquamarine;
+    margin-top: 50px;
+    padding: 10px 50px 5px 30px;
+}
+.position{
+    border: 15px solid aquamarine;
+}
+.relative{
+    position: absolute;
+    top: 40px;
+    left: 80px;
+    font-size: 20px;
+}
+.page{
+    height: 100vh;
+}
+     .fixed{
+        position: fixed;
+        left: 150px;
+     }
+     .sticky{
+        position: sticky;
+        top: 10px;
+        left: 120px;
+        height:100vh;
+    
+
+     }
+     .inline{
+        display: inline;
+
+     }
+     .display{
+        display: inline;
+
+     }
+     .flex-container{
+        display: flex;
+        flex-direction: row-reverse;
+        background-color: aqua;
+        border: 2px solid greenyellow;
+        padding: 15px;
+        justify-content: flex-start;
+        align-items: baseline;
+        height: 100vh;
+     }
+    
+    
+        
+       
+     
+     .flex-container div{
+         background-color: blueviolet;
+        border: 2px solid burlywood;
+         height: 100px;
+         width: 100px;
+     }
+     .two{
+        /*flex-grow: 2;*/
+        flex-shrink: 0;
+    
+     
+        
+     }
+     .nav{
+        display:flex;
+        justify-content: space-evenly;
+     }
+     li{
+        list-style: none;
+     }
+     @media (max-width:468px){
+      .nav{
+         display:flex;
+         flex-direction: column;
+         color: cyan;
+      }
+     }
+     
+     
+ 
+    
+      
+    .grid-container{
+        display: grid;
+        grid-template: 50px 50px /50px 50px 50px;
+        /* row-gap: 20px;
+        column-gap: 30px; */
+     }
+     .grid-container div{
+        border: 2px solid palevioletred;
+     }
+     .one{
+        grid-column-start: 1;
+        grid-column-end: 4;
+        grid-row-start: 1;
+        grid-row-end: 3;
+     }
