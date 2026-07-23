@@ -1,0 +1,220 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Dashboard - ConnectSphere{% endblock %}
+
+{% block content %}
+<div class="container mt-4 mb-5">
+    <!-- Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="fw-bold text-dark" style="font-family: 'Inter', sans-serif;">
+            Hello, {{ request.user.first_name|default:request.user.username }}!
+        </h2>
+    </div>
+
+    <!-- Stats Row -->
+    <div class="row g-4 mb-5">
+        <div class="col-6 col-md-3">
+            <div class="card bg-white shadow-sm border-0 rounded-4 text-center p-3 h-100" style="border-left: 5px solid #4f46e5 !important;">
+                <h3 class="fw-bold mb-1 text-primary">{{ user_posts.count }}</h3>
+                <p class="text-muted mb-0 fw-semibold">Total Posts</p>
+            </div>
+        </div>
+        <div class="col-6 col-md-3">
+            <div class="card bg-white shadow-sm border-0 rounded-4 text-center p-3 h-100" style="border-left: 5px solid #7c3aed !important;">
+                <h3 class="fw-bold mb-1 text-primary">{{ followers.count }}</h3>
+                <p class="text-muted mb-0 fw-semibold">Followers</p>
+            </div>
+        </div>
+        <div class="col-6 col-md-3">
+            <div class="card bg-white shadow-sm border-0 rounded-4 text-center p-3 h-100" style="border-left: 5px solid #3b82f6 !important;">
+                <h3 class="fw-bold mb-1 text-primary">{{ following.count }}</h3>
+                <p class="text-muted mb-0 fw-semibold">Following</p>
+            </div>
+        </div>
+        <div class="col-6 col-md-3">
+            <div class="card bg-white shadow-sm border-0 rounded-4 text-center p-3 h-100" style="border-left: 5px solid #ec4899 !important;">
+                <h3 class="fw-bold mb-1 text-primary">{{ liked_posts.count }}</h3>
+                <p class="text-muted mb-0 fw-semibold">Liked Posts</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tabs -->
+    <ul class="nav nav-pills mb-4 gap-2 justify-content-center justify-content-md-start border-bottom pb-3">
+        <li class="nav-item">
+            <a class="nav-link rounded-pill fw-semibold {% if active_tab == 'posts' %}active shadow-sm{% else %}text-muted bg-light{% endif %}" 
+               href="{% url 'dashboard' %}?tab=posts"
+               {% if active_tab == 'posts' %}style="background: linear-gradient(135deg, #4f46e5, #7c3aed);"{% endif %}>
+                <i class="bi bi-grid-3x3 me-2"></i>My Posts
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link rounded-pill fw-semibold {% if active_tab == 'liked' %}active shadow-sm{% else %}text-muted bg-light{% endif %}" 
+               href="{% url 'dashboard' %}?tab=liked"
+               {% if active_tab == 'liked' %}style="background: linear-gradient(135deg, #4f46e5, #7c3aed);"{% endif %}>
+                <i class="bi bi-heart-fill me-2"></i>Liked Posts
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link rounded-pill fw-semibold {% if active_tab == 'followers' %}active shadow-sm{% else %}text-muted bg-light{% endif %}" 
+               href="{% url 'dashboard' %}?tab=followers"
+               {% if active_tab == 'followers' %}style="background: linear-gradient(135deg, #4f46e5, #7c3aed);"{% endif %}>
+                <i class="bi bi-people-fill me-2"></i>Followers
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link rounded-pill fw-semibold {% if active_tab == 'following' %}active shadow-sm{% else %}text-muted bg-light{% endif %}" 
+               href="{% url 'dashboard' %}?tab=following"
+               {% if active_tab == 'following' %}style="background: linear-gradient(135deg, #4f46e5, #7c3aed);"{% endif %}>
+                <i class="bi bi-person-check-fill me-2"></i>Following
+            </a>
+        </li>
+    </ul>
+
+    <!-- Tab Content -->
+    <div class="tab-content mt-4">
+        
+        {% if active_tab == 'posts' %}
+        <div class="row g-4">
+            {% for post in user_posts %}
+            <div class="col-sm-6 col-md-4 col-lg-3">
+                <a href="{% url 'post_detail' post.pk %}" class="text-decoration-none text-dark">
+                    <div class="card h-100 shadow-sm border-0 rounded-4 overflow-hidden hover-scale transition-all">
+                        {% if post.image %}
+                        <img src="{{ post.image.url }}" class="card-img-top" alt="Post" style="height: 200px; object-fit: cover;">
+                        {% else %}
+                        <div class="card-img-top bg-light d-flex align-items-center justify-content-center text-muted" style="height: 200px;">
+                            <i class="bi bi-image fs-1"></i>
+                        </div>
+                        {% endif %}
+                        <div class="card-body p-3">
+                            <p class="card-text text-truncate">{{ post.caption }}</p>
+                            <div class="d-flex justify-content-between text-muted small">
+                                <span><i class="bi bi-heart-fill me-1 text-danger"></i>{{ post.likes_count }}</span>
+                                <span><i class="bi bi-chat-fill me-1"></i>{{ post.comments_count }}</span>
+                            </div>
+                        </div>
+                    </div>
+                </a>
+            </div>
+            {% empty %}
+            <div class="col-12 text-center py-5">
+                <div class="text-muted mb-3"><i class="bi bi-camera fs-1"></i></div>
+                <h4 class="fw-bold">No posts yet</h4>
+                <p class="text-muted">When you share photos, they will appear on your profile.</p>
+                <a href="{% url 'create_post' %}" class="btn btn-primary rounded-pill mt-2">Create your first post</a>
+            </div>
+            {% endfor %}
+        </div>
+        
+        {% elif active_tab == 'liked' %}
+        <div class="row g-4">
+            {% for post in liked_posts %}
+            <div class="col-sm-6 col-md-4 col-lg-3">
+                <a href="{% url 'post_detail' post.pk %}" class="text-decoration-none text-dark">
+                    <div class="card h-100 shadow-sm border-0 rounded-4 overflow-hidden hover-scale transition-all">
+                        {% if post.image %}
+                        <img src="{{ post.image.url }}" class="card-img-top" alt="Post" style="height: 200px; object-fit: cover;">
+                        {% else %}
+                        <div class="card-img-top bg-light d-flex align-items-center justify-content-center text-muted" style="height: 200px;">
+                            <i class="bi bi-image fs-1"></i>
+                        </div>
+                        {% endif %}
+                        <div class="card-body p-3">
+                            <div class="d-flex align-items-center mb-2">
+                                {% if post.user.profile.profile_picture %}
+                                <img src="{{ post.user.profile.profile_picture.url }}" class="rounded-circle me-2" style="width:20px; height:20px; object-fit:cover;">
+                                {% else %}
+                                <i class="bi bi-person-circle me-2 text-muted"></i>
+                                {% endif %}
+                                <small class="fw-bold text-truncate">{{ post.user.username }}</small>
+                            </div>
+                            <p class="card-text text-truncate small">{{ post.caption }}</p>
+                        </div>
+                    </div>
+                </a>
+            </div>
+            {% empty %}
+            <div class="col-12 text-center py-5">
+                <div class="text-muted mb-3"><i class="bi bi-heart fs-1"></i></div>
+                <h4 class="fw-bold">No liked posts</h4>
+                <p class="text-muted">Posts you like will be saved here.</p>
+            </div>
+            {% endfor %}
+        </div>
+        
+        {% elif active_tab == 'followers' %}
+        <div class="row g-3">
+            {% for f_user in followers %}
+            <div class="col-md-6 col-lg-4">
+                <div class="card shadow-sm border-0 rounded-4 h-100 d-flex flex-row align-items-center p-3">
+                    <a href="{% url 'profile' f_user.username %}" class="flex-shrink-0">
+                        {% if f_user.profile.profile_picture %}
+                        <img src="{{ f_user.profile.profile_picture.url }}" class="rounded-circle" style="width: 60px; height: 60px; object-fit: cover;">
+                        {% else %}
+                        <div class="rounded-circle bg-secondary text-white d-flex justify-content-center align-items-center" style="width: 60px; height: 60px;">
+                            <i class="bi bi-person-fill fs-3"></i>
+                        </div>
+                        {% endif %}
+                    </a>
+                    <div class="ms-3 flex-grow-1 overflow-hidden">
+                        <a href="{% url 'profile' f_user.username %}" class="text-dark fw-bold text-decoration-none d-block text-truncate">{{ f_user.username }}</a>
+                        <small class="text-muted text-truncate d-block">{{ f_user.first_name }} {{ f_user.last_name }}</small>
+                    </div>
+                    <a href="{% url 'profile' f_user.username %}" class="btn btn-sm btn-outline-primary rounded-pill px-3">View</a>
+                </div>
+            </div>
+            {% empty %}
+            <div class="col-12 text-center py-5">
+                <div class="text-muted mb-3"><i class="bi bi-people fs-1"></i></div>
+                <h4 class="fw-bold">No followers yet</h4>
+            </div>
+            {% endfor %}
+        </div>
+        
+        {% elif active_tab == 'following' %}
+        <div class="row g-3">
+            {% for f_user in following %}
+            <div class="col-md-6 col-lg-4">
+                <div class="card shadow-sm border-0 rounded-4 h-100 d-flex flex-row align-items-center p-3">
+                    <a href="{% url 'profile' f_user.username %}" class="flex-shrink-0">
+                        {% if f_user.profile.profile_picture %}
+                        <img src="{{ f_user.profile.profile_picture.url }}" class="rounded-circle" style="width: 60px; height: 60px; object-fit: cover;">
+                        {% else %}
+                        <div class="rounded-circle bg-secondary text-white d-flex justify-content-center align-items-center" style="width: 60px; height: 60px;">
+                            <i class="bi bi-person-fill fs-3"></i>
+                        </div>
+                        {% endif %}
+                    </a>
+                    <div class="ms-3 flex-grow-1 overflow-hidden">
+                        <a href="{% url 'profile' f_user.username %}" class="text-dark fw-bold text-decoration-none d-block text-truncate">{{ f_user.username }}</a>
+                        <small class="text-muted text-truncate d-block">{{ f_user.first_name }} {{ f_user.last_name }}</small>
+                    </div>
+                    <a href="{% url 'profile' f_user.username %}" class="btn btn-sm btn-primary rounded-pill px-3">View</a>
+                </div>
+            </div>
+            {% empty %}
+            <div class="col-12 text-center py-5">
+                <div class="text-muted mb-3"><i class="bi bi-person-check fs-1"></i></div>
+                <h4 class="fw-bold">Not following anyone</h4>
+                <p class="text-muted">Find users to follow to see their posts in your feed.</p>
+                <a href="{% url 'search_users' %}" class="btn btn-primary rounded-pill mt-2">Find Users</a>
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+        
+    </div>
+</div>
+
+<style>
+    .hover-scale {
+        transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+    }
+    .hover-scale:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 20px rgba(0,0,0,0.1) !important;
+    }
+</style>
+{% endblock %}

@@ -1,0 +1,101 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ profile_user.username }}'s Profile - ConnectSphere{% endblock %}
+
+{% block content %}
+<div class="container mt-4 pt-3">
+    <!-- Profile Header -->
+    <div class="row justify-content-center mb-5">
+        <div class="col-md-8 col-lg-8">
+            <div class="card cs-glass-card border-0 shadow-sm p-4" style="border-radius: 20px;">
+                <div class="row align-items-center">
+                    <div class="col-auto text-center mb-3 mb-md-0">
+                        {% if profile_user.profile.profile_picture %}
+                            <img src="{{ profile_user.profile.profile_picture.url }}" alt="{{ profile_user.username }}" class="rounded-circle shadow" style="width: 150px; height: 150px; object-fit: cover; border: 4px solid #fff;">
+                        {% else %}
+                            <div class="rounded-circle shadow bg-secondary d-flex align-items-center justify-content-center text-white mx-auto" style="width: 150px; height: 150px; border: 4px solid #fff;">
+                                <i class="bi bi-person" style="font-size: 5rem;"></i>
+                            </div>
+                        {% endif %}
+                    </div>
+                    <div class="col">
+                        <div class="d-flex flex-column flex-md-row align-items-md-center mb-3">
+                            <h2 class="mb-2 mb-md-0 me-md-4 fw-bold">{{ profile_user.username }}</h2>
+                            {% if request.user == profile_user %}
+                                <a href="{% url 'edit_profile' %}" class="btn btn-outline-secondary rounded-pill fw-medium px-4">Edit Profile</a>
+                            {% else %}
+                                {% if request.user.is_authenticated %}
+                                <button class="btn btn-{% if is_following %}secondary{% else %}primary{% endif %} rounded-pill fw-medium px-4 follow-btn" data-username="{{ profile_user.username }}">
+                                    {% if is_following %}Unfollow{% else %}Follow{% endif %}
+                                </button>
+                                {% endif %}
+                            {% endif %}
+                        </div>
+                        
+                        <div class="d-flex mb-3 gap-4">
+                            <div><strong class="fs-5">{{ posts_count }}</strong> posts</div>
+                            <div>
+                                <a href="{% url 'followers_list' profile_user.username %}" class="text-decoration-none text-dark">
+                                    <strong class="fs-5">{{ followers_count }}</strong> followers
+                                </a>
+                            </div>
+                            <div>
+                                <a href="{% url 'following_list' profile_user.username %}" class="text-decoration-none text-dark">
+                                    <strong class="fs-5">{{ following_count }}</strong> following
+                                </a>
+                            </div>
+                        </div>
+                        
+                        <div class="profile-bio">
+                            <h6 class="fw-bold mb-1">{{ profile_user.first_name }} {{ profile_user.last_name }}</h6>
+                            <p class="mb-0 text-break" style="white-space: pre-line;">{{ profile_user.profile.bio }}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Posts Grid -->
+    <div class="row justify-content-center">
+        <div class="col-md-10">
+            <h4 class="mb-4 text-center fw-bold cs-brand"><i class="bi bi-grid-3x3"></i> Posts</h4>
+            {% if posts %}
+                <div class="row g-1 g-md-4">
+                    {% for post in posts %}
+                        <div class="col-4 mb-1 mb-md-4">
+                            <a href="{% url 'post_detail' post.pk %}" class="text-decoration-none position-relative d-block group cs-post-thumbnail" style="aspect-ratio: 1/1; overflow: hidden; border-radius: 12px;">
+                                {% if post.image %}
+                                    <img src="{{ post.image.url }}" alt="Post image" class="w-100 h-100 object-fit-cover" style="object-fit: cover;">
+                                {% else %}
+                                    <div class="w-100 h-100 bg-light d-flex align-items-center justify-content-center text-muted p-2 text-center">
+                                        <small>{{ post.caption|truncatechars:50 }}</small>
+                                    </div>
+                                {% endif %}
+                                <div class="position-absolute top-0 start-0 w-100 h-100 bg-dark bg-opacity-50 opacity-0 hover-overlay d-flex align-items-center justify-content-center text-white transition-all">
+                                    <div class="d-flex gap-3">
+                                        <span><i class="bi bi-heart-fill"></i> {{ post.likes_count }}</span>
+                                        <span><i class="bi bi-chat-fill"></i> {{ post.comments_count }}</span>
+                                    </div>
+                                </div>
+                            </a>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div class="text-center py-5">
+                    <i class="bi bi-camera text-muted" style="font-size: 4rem;"></i>
+                    <h3 class="mt-3 text-muted">No Posts Yet</h3>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<style>
+    .hover-overlay { opacity: 0; }
+    .cs-post-thumbnail:hover .hover-overlay { opacity: 1 !important; }
+    .transition-all { transition: all 0.3s ease; }
+</style>
+{% endblock %}

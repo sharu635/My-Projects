@@ -1,0 +1,60 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ profile_user.username }}'s Followers - ConnectSphere{% endblock %}
+
+{% block content %}
+<div class="container mt-5 mb-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="d-flex align-items-center mb-4">
+                <a href="{% url 'profile' profile_user.username %}" class="btn btn-light rounded-circle p-2 me-3 shadow-sm text-dark">
+                    <i class="bi bi-arrow-left fs-5"></i>
+                </a>
+                <h2 class="fw-bold mb-0 text-dark" style="font-family: 'Inter', sans-serif;">{{ profile_user.username }}'s Followers</h2>
+            </div>
+            
+            <div class="card shadow-lg border-0 rounded-4" style="background: rgba(255, 255, 255, 0.9);">
+                <div class="card-body p-4">
+                    <div class="row g-3">
+                        {% for f_user in followers %}
+                        <div class="col-md-6">
+                            <div class="d-flex align-items-center p-3 bg-light rounded-4 border-0 hover-shadow">
+                                <a href="{% url 'profile' f_user.username %}" class="flex-shrink-0">
+                                    {% if f_user.profile.profile_picture %}
+                                    <img src="{{ f_user.profile.profile_picture.url }}" class="rounded-circle" style="width: 60px; height: 60px; object-fit: cover;">
+                                    {% else %}
+                                    <div class="rounded-circle bg-secondary text-white d-flex justify-content-center align-items-center" style="width: 60px; height: 60px;">
+                                        <i class="bi bi-person-fill fs-3"></i>
+                                    </div>
+                                    {% endif %}
+                                </a>
+                                <div class="ms-3 flex-grow-1 overflow-hidden">
+                                    <a href="{% url 'profile' f_user.username %}" class="text-dark fw-bold text-decoration-none d-block text-truncate">{{ f_user.username }}</a>
+                                    <small class="text-muted text-truncate d-block">{{ f_user.first_name }} {{ f_user.last_name }}</small>
+                                </div>
+                            </div>
+                        </div>
+                        {% empty %}
+                        <div class="col-12 text-center py-5">
+                            <div class="text-muted mb-3"><i class="bi bi-people fs-1"></i></div>
+                            <h4 class="fw-bold">No followers yet</h4>
+                            <p class="text-muted">{{ profile_user.username }} doesn't have any followers.</p>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .hover-shadow {
+        transition: box-shadow 0.2s ease;
+    }
+    .hover-shadow:hover {
+        box-shadow: 0 .5rem 1rem rgba(0,0,0,.15)!important;
+    }
+</style>
+{% endblock %}

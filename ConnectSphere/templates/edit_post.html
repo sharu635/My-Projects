@@ -1,0 +1,45 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Edit Post - ConnectSphere{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-6">
+            <div class="card shadow-lg border-0 rounded-4" style="background: rgba(255, 255, 255, 0.85); backdrop-filter: blur(10px);">
+                <div class="card-body p-4 p-md-5">
+                    <h2 class="fw-bold text-primary mb-4 text-center" style="font-family: 'Inter', sans-serif;">Edit Post</h2>
+                    <form method="POST" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        
+                        {% if post.image %}
+                        <div class="mb-4 text-center">
+                            <p class="fw-semibold text-secondary mb-2">Current Image</p>
+                            <img src="{{ post.image.url }}" class="img-fluid rounded shadow-sm" style="max-height: 250px; object-fit: contain;" alt="Current Post Image">
+                        </div>
+                        {% endif %}
+
+                        <div class="mb-4">
+                            <label for="id_image" class="form-label fw-semibold text-secondary">Update Image (Optional)</label>
+                            {{ form.image }}
+                        </div>
+                        
+                        <div class="mb-4">
+                            <label for="id_caption" class="form-label fw-semibold text-secondary">Caption</label>
+                            {{ form.caption }}
+                        </div>
+                        
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-primary btn-lg rounded-pill fw-bold shadow-sm" style="background: linear-gradient(135deg, #4f46e5, #7c3aed); border: none;">
+                                <i class="bi bi-save-fill me-2"></i>Save Changes
+                            </button>
+                            <a href="{% url 'post_detail' post.pk %}" class="btn btn-light rounded-pill fw-semibold mt-2 border text-muted">Cancel</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
