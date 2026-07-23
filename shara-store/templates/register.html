@@ -1,0 +1,48 @@
+{% extends 'base.html' %}
+
+{% block title %}Register{% endblock %}
+
+{% block content %}
+<div class="auth-container">
+    <h2 class="auth-title">Create an Account</h2>
+    
+    <form method="post">
+        {% csrf_token %}
+        
+        {% for field in form %}
+            <div class="form-group">
+                <label class="form-label" for="{{ field.id_for_label }}">{{ field.label }}</label>
+                {{ field }}
+                {% if field.help_text %}
+                    <div style="color: var(--text-muted); font-size: 0.75rem; margin-top: 0.25rem;">
+                        {{ field.help_text|safe }}
+                    </div>
+                {% endif %}
+                {% for error in field.errors %}
+                    <div style="color: var(--danger); font-size: 0.875rem; margin-top: 0.25rem;">{{ error }}</div>
+                {% endfor %}
+            </div>
+        {% endfor %}
+        
+        <button type="submit" class="btn btn-primary w-100 mt-2">Register</button>
+    </form>
+    
+    <div class="text-center mt-3">
+        <p class="mb-0 text-muted" style="font-size: 0.9rem;">
+            Already have an account? <a href="{% url 'login' %}" style="color: var(--primary-color); text-decoration: none; font-weight: 500;">Login here</a>
+        </p>
+    </div>
+</div>
+
+<script>
+    // Add form-control class to all inputs
+    document.addEventListener("DOMContentLoaded", function() {
+        const inputs = document.querySelectorAll('.auth-container input');
+        inputs.forEach(input => {
+            if (input.type !== 'checkbox' && input.type !== 'radio') {
+                input.classList.add('form-control');
+            }
+        });
+    });
+</script>
+{% endblock %}
